@@ -75,8 +75,8 @@ function component(width, height, color, x, y, type) {
         }
     }
     this.newPos = function(obstacles) {
-        this.x += this.speedX;
-        this.y += this.speedY;
+        this.x = this.speedX+myGameArea.canvas.width*0.5 - this.width*0.5;
+        this.y = this.speedY+myGameArea.canvas.height*0.5 - this.height*0.5;
         for (i = 0; i < obstacles.length; i += 1) {
             if (this.wallCheck(obstacles[i])){
                this.x -= this.speedX*2;
@@ -89,34 +89,6 @@ function component(width, height, color, x, y, type) {
         for (i = 0; i < obstacles.length; i += 1) {
             obstacles[i].x -= this.speedX;
             obstacles[i].y -= this.speedY;
-        }
-        this.bottomLimit();
-        this.aboveLimit();
-        this.leftLimit();
-        this.rightLimit();
-    }
-    this.aboveLimit = function() {
-        var rockabove = 0;
-        if (this.y < rockabove) {
-            this.y = rockabove; 
-        }
-    }
-    this.leftLimit = function(){
-        var rockLeft = 0;
-        if (this.x < rockLeft){
-            this.x = rockLeft;
-        }
-    }
-    this.bottomLimit = function() {
-        var rockbottom = myGameArea.canvas.height - this.height;
-        if (this.y > rockbottom) {
-            this.y = rockbottom; 
-        }
-    }
-    this.rightLimit = function(){
-        var rockRight = myGameArea.canvas.width - this.width;
-        if (this.x > rockRight){
-            this.x = rockRight;
         }
     }
 }
