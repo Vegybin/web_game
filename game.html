@@ -93,20 +93,37 @@ function component(width, height, color, x, y, type) {
     }
 }
 
+
+var x, height, gap, minSize, maxSize, minGap, maxGap;
+for (i=0; i< 40; i+=1){
+    for (j=0; j<20; j+=1){
+        minSize = 80;
+        maxSize = 160;
+        size = Math.floor(Math.random()*(maxSize-minSize+1)+minSize);
+        minX = -2000+(4000/40)*i;
+        maxX = minX + 100;
+        minY = -2000+(4000/20)*j;
+        maxY = minY+200;
+        x = Math.floor(Math.random()*(maxX-minX+1)+minX);
+        y = Math.floor(Math.random()*(maxY-minY+1)+minY);
+        if (Math.random()<0.5)
+            myObstacles.push(new component(10, size, "green", x, y));
+        else
+            myObstacles.push(new component(size, 10, "green", x, y));
+    }
+}
+
 function updateGameArea() {
-    var x, height, gap, minHeight, maxHeight, minGap, maxGap;
+    
     myGameArea.clear();
     myGameArea.frameNo += 1;
     if (myGameArea.frameNo == 1 || everyinterval(150)) {
         x = myGameArea.canvas.width;
-        minHeight = 20;
-        maxHeight = 200;
-        height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
+        
+        
         minGap = 50;
         maxGap = 200;
         gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-        myObstacles.push(new component(10, height, "green", x, 0));
-        myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
     }
     for (i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].update();
@@ -118,7 +135,7 @@ function updateGameArea() {
 }
 
 function everyinterval(n) {
-    if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+    if ((myGameArea.frameNo/n) % 1 == 0) {return true;}
     return false;
 }
 
@@ -139,14 +156,16 @@ document.addEventListener("keypress", function(event) {
         event.preventDefault();
         myGamePiece.speedX += 1;
     }
-    if (myGamePiece.speedX>4) myGamePiece.speedX=4;
-    if (myGamePiece.speedY>4) myGamePiece.speedY=4;
-    if (myGamePiece.speedX<-4) myGamePiece.speedX=-4;
-    if (myGamePiece.speedY<-4) myGamePiece.speedY=-4;
+    if (myGamePiece.speedX>6) myGamePiece.speedX=6;
+    if (myGamePiece.speedY>6) myGamePiece.speedY=6;
+    if (myGamePiece.speedX<-6) myGamePiece.speedX=-6;
+    if (myGamePiece.speedY<-6) myGamePiece.speedY=-6;
 });
 document.addEventListener("keyup", function(event) {
-        myGamePiece.speedX = 0;
+    if (event.key === "W" || event.key === "S" || event.key === "w" || event.key === "s")
         myGamePiece.speedY = 0;
+    if (event.key === "A" || event.key === "D" || event.key === "a" || event.key === "d")
+        myGamePiece.speedX = 0;
 });
 </script>
 </body>
