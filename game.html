@@ -17,9 +17,6 @@
 canvas {
     border:1px solid #d3d3d3;
     background-color: #000000;
-    display: flex;
-    min-width: 90vw;
-    display: block; /* Removes extra space below the canvas */
 }
 .up{
   display: flex;
@@ -35,7 +32,8 @@ canvas {
     padding: 2rem;
     border: 3px solid black;
     border-radius: 1rem;
-    background-color:rgb(248, 172, 72)
+    background-color:rgb(35, 80, 148);
+    color: white;
  }
     button:hover {
   background-color: rgb(196, 141, 71);
@@ -67,16 +65,16 @@ var myScore;
 
 // function to start game
 function startGame() {
-    myGamePiece = new component(30, 30, "red", 10, 120);
-    myScore = new component("25px", "Consolas", "white", 280, 40, "text");
+    myGamePiece = new component(30, 30, "white", 10, 120, "main");
+    myScore = new component("25px", "Consolas", "white", 10, 30, "text");
     myGameArea.start();
 }
 
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
@@ -86,6 +84,10 @@ var myGameArea = {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }
+function r() { 
+    return Math. floor(Math. random() * 255) 
+} 
+
 
 function component(width, height, color, x, y, type) {
     this.type = type;
@@ -96,21 +98,37 @@ function component(width, height, color, x, y, type) {
     this.speedY = 0;    
     this.x = x;
     this.y = y;
+    var color = 'rgb(' + r() + "," + r() + "," + r() + ')';
     this.update = function() {
         ctx = myGameArea.context;
         if (this.type == "text") {
             ctx.font = this.width + " " + this.height;
-            ctx.fillStyle = color;
+            ctx.fillStyle = "white";
             ctx.fillText(this.text, this.x, this.y);
-        } else {
-            ctx.fillStyle = color;
-            ctx.shadowColor = "cyan"; // Change to desired neon color
+        }
+
+        else if(this.type=="main")
+        {
+            ctx.fillStyle = "white";
+            ctx.shadowColor = "rgb(243, 58, 106)"; // Change to desired neon color
             ctx.shadowBlur = 30; // Adjust for glow effect
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.shadowColor = "transparent"; // Reset shadow  
+        }  
+
+         else {
+            
+            ctx.fillStyle = color;
+            ctx.shadowColor = color; // Change to desired neon color
+            ctx.shadowBlur = 40; // Adjust for glow effect
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
             ctx.fillRect(this.x, this.y, this.width, this.height);
             ctx.shadowColor = "transparent"; // Reset shadow
         }
+
     }
     this.wallCheck = function(otherobj) {
         var myleft = this.x;
@@ -161,9 +179,9 @@ for (i=0; i< 40; i+=1){
         x = Math.floor(Math.random()*(maxX-minX+1)+minX);
         y = Math.floor(Math.random()*(maxY-minY+1)+minY);
         if (Math.random()<0.5)
-            myObstacles.push(new component(10, size, "green", x, y));
+            myObstacles.push(new component(12, size, "green", x, y));
         else
-            myObstacles.push(new component(size, 10, "green", x, y));
+            myObstacles.push(new component(size, 12, "green", x, y));
     }
 }
 
@@ -196,24 +214,24 @@ function everyinterval(n) {
 document.addEventListener("keypress", function(event) {
     if (event.key === "W" || event.key === "w" ) {
         event.preventDefault();
-        myGamePiece.speedY -= 1;
+        myGamePiece.speedY -= 2;
     }
     else if (event.key === "A" || event.key === "a" ) {
         event.preventDefault();
-        myGamePiece.speedX -= 1;
+        myGamePiece.speedX -= 2;
     }
     else if (event.key === "S" || event.key === "s" ) {
         event.preventDefault();
-        myGamePiece.speedY += 1;
+        myGamePiece.speedY += 2;
     }
     else if (event.key === "D" || event.key === "d" ) {
         event.preventDefault();
-        myGamePiece.speedX += 1;
+        myGamePiece.speedX += 2;
     }
-    if (myGamePiece.speedX>6) myGamePiece.speedX=6;
-    if (myGamePiece.speedY>6) myGamePiece.speedY=6;
-    if (myGamePiece.speedX<-6) myGamePiece.speedX=-6;
-    if (myGamePiece.speedY<-6) myGamePiece.speedY=-6;
+    if (myGamePiece.speedX>8) myGamePiece.speedX=8;
+    if (myGamePiece.speedY>8) myGamePiece.speedY=8;
+    if (myGamePiece.speedX<-8) myGamePiece.speedX=-8;
+    if (myGamePiece.speedY<-8) myGamePiece.speedY=-8;
 });
 document.addEventListener("keyup", function(event) {
     if (event.key === "W" || event.key === "S" || event.key === "w" || event.key === "s")
