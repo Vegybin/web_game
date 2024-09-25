@@ -85,7 +85,7 @@ var myGameArea = {
     }
 }
 function r() { 
-    return Math. floor(Math. random() * 255) 
+    return Math.floor(Math. random() * 255); 
 } 
 
 
@@ -156,12 +156,16 @@ function component(width, height, x, y, type) {
         this.y = this.speedY+myGameArea.canvas.height*0.5 - this.height*0.5;
         for (i = 0; i < obstacles.length; i += 1) {
             if (this.wallCheck(obstacles[i])){
-               this.x -= this.speedX*2;
-               this.y -= this.speedY*2;
-               this.speedX = 0;
-               this.speedY = 0
-               obstacles[i].revealed = true;
-               break;
+                if (myGameArea.frameNo < 2) {
+                    obstacles[i] = new component(obstacles[i].width, obstacles[i].height, -2100, -2);
+                    continue;
+                }
+                this.x -= this.speedX*2;
+                this.y -= this.speedY*2;
+                this.speedX = 0;
+                this.speedY = 0
+                obstacles[i].revealed = true;
+                break;
             }
         }
         for (i = 0; i < obstacles.length; i += 1) {
@@ -184,10 +188,11 @@ for (i=0; i< 40; i+=1){
         maxY = minY+200;
         x = Math.floor(Math.random()*(maxX-minX+1)+minX);
         y = Math.floor(Math.random()*(maxY-minY+1)+minY);
+        obstacleWall = new component(12, size, x, y);
         if (Math.random()<0.5)
-            myObstacles.push(new component(12, size, x, y));
+            myObstacles.push(obstacleWall);
         else
-            myObstacles.push(new component(size, 12, x, y));
+            myObstacles.push(obstacleWall);
     }
 }
 
