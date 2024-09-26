@@ -85,7 +85,7 @@ var myGameArea = {
     }
 }
 function r() { 
-    return Math.floor(Math. random() * 254) + 1; 
+    return Math.floor(Math. random() * 224) + 1; 
 } 
 
 
@@ -98,8 +98,12 @@ function component(width, height, x, y, type) {
     this.speedY = 0;    
     this.x = x;
     this.y = y;
+    this.red = r();
+    this.green = r();
+    this.blue = r();
     this.revealed = false;
-    var color = 'rgb(' + r() + "," + r() + "," + r() + ')';
+    this.color = 'rgb(' + this.red + "," + this.green + "," + this.blue + ')';
+    this.blur = 20;
     this.update = function() {
         ctx = myGameArea.context;
         if (this.type == "text") {
@@ -119,16 +123,16 @@ function component(width, height, x, y, type) {
          else if(this.revealed == false){            
             ctx.fillStyle = "rgba(0, 0, 0, 0)";
             ctx.shadowColor = "rgba(0, 0, 0, 0)"; // Change to desired neon color
-            ctx.shadowBlur = 40; // Adjust for glow effect
+            ctx.shadowBlur = 20; // Adjust for glow effect
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
             ctx.fillRect(this.x, this.y, this.width, this.height);
             ctx.shadowColor = "transparent"; // Reset shadow
         }
         else{
-            ctx.fillStyle = color;
-            ctx.shadowColor = color; // Change to desired neon color
-            ctx.shadowBlur = 40; // Adjust for glow effect
+            ctx.fillStyle = this.color;
+            ctx.shadowColor = 'rgb(' + this.red + "," + this.green + "," + this.blue + ')'; // Change to desired neon color
+            ctx.shadowBlur = this.blur; // Adjust for glow effect
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
             ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -165,7 +169,22 @@ function component(width, height, x, y, type) {
                 this.speedX = 0;
                 this.speedY = 0
                 obstacles[i].revealed = true;
+                obstacles[i].blur = 40;
+                red_ = obstacles[i].red+30;
+                green_ = obstacles[i].green+30;
+                blue_ = obstacles[i].blue+30;
+                obstacles[i].color = 'rgb(' + red_ + "," + green_ + "," + blue_ + ')';
                 break;
+            }
+            else{
+                obstacles[i].blur -= 1;
+                if (obstacles[i].blur < 20){
+                    obstacles[i].blur = 20;
+                }
+                red_ = obstacles[i].red+30-(40-obstacles[i].blur)*2;
+                green_ = obstacles[i].green+30-(40-obstacles[i].blur)*2;
+                blue_ = obstacles[i].blue+30-(40-obstacles[i].blur)*2;
+                obstacles[i].color = 'rgb(' + red_ + "," + green_ + "," + blue_ + ')';
             }
         }
         for (i = 0; i < obstacles.length; i += 1) {
