@@ -66,7 +66,7 @@ var myScore;
 // function to start game
 function startGame() {
     myGamePiece = new component(30, 30, 10, 120, "main");
-    mySecondGamePiece = new component(30, 30, 10, 120, "second");
+    mySecondGamePiece = new component(30, 30, 10, 120, "she");
    
 
     myScore = new component("25px", "Consolas", 10, 30, "text");
@@ -81,7 +81,7 @@ var myGameArea = {
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
-        this.interval = setInterval(updateGameArea, 20);
+        this.interval = setInterval(updateGameArea, 10);
         },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -91,6 +91,9 @@ function r() {
     return Math.floor(Math. random() * 224) + 1; 
 } 
 
+function euclidean_dist(v1, v2) {
+    return Math.sqrt((v1[0]-v2[0])*(v1[0]-v2[0])+(v1[1]-v2[1])*(v1[1]-v2[1]));
+}
 
 function component(width, height, x, y, type) {
     this.type = type;
@@ -107,6 +110,9 @@ function component(width, height, x, y, type) {
     this.revealed = false;
     this.color = 'rgb(' + this.red + "," + this.green + "," + this.blue + ')';
     this.blur = 20;
+    this.centre = function(){
+        return [this.x+0.5*this.width, this.y+0.5*this.height];
+    }
     this.update = function() {
         ctx = myGameArea.context;
         if (this.type == "text") {
@@ -123,7 +129,7 @@ function component(width, height, x, y, type) {
             ctx.fillRect(this.x, this.y, this.width, this.height);
             ctx.shadowColor = "transparent"; // Reset shadow 
         }  
-        else if(this.type=="second"){
+        else if(this.type=="she"){
             ctx.fillStyle = "rgb(255, 29, 141)";
             ctx.shadowColor = "white"; // Change to desired neon color
             ctx.shadowBlur = 30; // Adjust for glow effect
@@ -168,40 +174,80 @@ function component(width, height, x, y, type) {
         }
     }
     this.newPos = function(obstacles) {
-        this.x = this.speedX+myGameArea.canvas.width*0.5 - this.width*0.5;
-        this.y = this.speedY+myGameArea.canvas.height*0.5 - this.height*0.5;
-        for (i = 0; i < obstacles.length; i += 1) {
-            if (this.wallCheck(obstacles[i])){
-                if (myGameArea.frameNo < 2) {
-                    obstacles[i] = new component(obstacles[i].width, obstacles[i].height, -2100, -2);
-                    continue;
+        if (this.type == "she"){
+            this.x -= myGamePiece.speedX;
+            this.y -= myGamePiece.speedY;
+            var currentDist = euclidean_dist(this.centre(), myGamePiece.centre());
+            var eightDs = [[0,1],[1,0],[1,1],[-1,0],[0,-1],[-1,-1],[-1, 1], [1, -1]];
+            var maxDistance = 0;
+            var fD = 0;
+            if (currentDist < 30){
+                alert("You win!");
+            }
+            if (currentDist < 200){
+                for (let i = 0; i < eightDs.length; i++) {
+                    const d = eightDs[i];
+                    this.x += d[0];
+                    this.y += d[1];
+                    let e_d = euclidean_dist(this.centre(), myGamePiece.centre());
+                    if (maxDistance < e_d)
+                    {
+                        maxDistance = e_d;
+                        fD = i;
+                    }
+                    this.x -= d[0];
+                    this.y -= d[1];
                 }
-                this.x -= this.speedX*2;
-                this.y -= this.speedY*2;
-                this.speedX = 0;
-                this.speedY = 0
-                obstacles[i].revealed = true;
-                obstacles[i].blur = 40;
-                red_ = obstacles[i].red+30;
-                green_ = obstacles[i].green+30;
-                blue_ = obstacles[i].blue+30;
-                obstacles[i].color = 'rgb(' + red_ + "," + green_ + "," + blue_ + ')';
-                break;
+                const D = eightDs[fD];
+                this.x += D[0]*3;
+                this.y += D[1]*3;
             }
             else{
-                obstacles[i].blur -= 1;
-                if (obstacles[i].blur < 20){
-                    obstacles[i].blur = 20;
+                if(Math.random()<0.02){
+                    const D = eightDs[Math.floor(Math.random()*8.0)];
+                    this.speedX = D[0]*3;
+                    this.speedY = D[1]*3;
                 }
-                red_ = obstacles[i].red+30-(40-obstacles[i].blur)*2;
-                green_ = obstacles[i].green+30-(40-obstacles[i].blur)*2;
-                blue_ = obstacles[i].blue+30-(40-obstacles[i].blur)*2;
-                obstacles[i].color = 'rgb(' + red_ + "," + green_ + "," + blue_ + ')';
+                this.x += this.speedX;
+                this.y += this.speedY;
             }
         }
-        for (i = 0; i < obstacles.length; i += 1) {
-            obstacles[i].x -= this.speedX;
-            obstacles[i].y -= this.speedY;
+        else{
+            this.x = this.speedX+myGameArea.canvas.width*0.5 - this.width*0.5;
+            this.y = this.speedY+myGameArea.canvas.height*0.5 - this.height*0.5;
+            for (i = 0; i < obstacles.length; i += 1) {
+                if (this.wallCheck(obstacles[i])){
+                    if (myGameArea.frameNo < 2) {
+                        obstacles[i] = new component(obstacles[i].width, obstacles[i].height, -2100, -2);
+                        continue;
+                    }
+                    this.x -= this.speedX*2;
+                    this.y -= this.speedY*2;
+                    this.speedX = 0;
+                    this.speedY = 0;
+                    obstacles[i].revealed = true;
+                    obstacles[i].blur = 40;
+                    red_ = obstacles[i].red+30;
+                    green_ = obstacles[i].green+30;
+                    blue_ = obstacles[i].blue+30;
+                    obstacles[i].color = 'rgb(' + red_ + "," + green_ + "," + blue_ + ')';
+                    break;
+                }
+                else{
+                    obstacles[i].blur -= 1;
+                    if (obstacles[i].blur < 20){
+                        obstacles[i].blur = 20;
+                    }
+                    red_ = obstacles[i].red+30-(40-obstacles[i].blur)*2;
+                    green_ = obstacles[i].green+30-(40-obstacles[i].blur)*2;
+                    blue_ = obstacles[i].blue+30-(40-obstacles[i].blur)*2;
+                    obstacles[i].color = 'rgb(' + red_ + "," + green_ + "," + blue_ + ')';
+                }
+            }
+            for (i = 0; i < obstacles.length; i += 1) {
+                obstacles[i].x -= this.speedX;
+                obstacles[i].y -= this.speedY;
+            }
         }
     }
 }
@@ -247,9 +293,10 @@ function updateGameArea() {
 
      // Update second game piece
       // Add this line for the new piece
+    mySecondGamePiece.newPos(myObstacles);
     mySecondGamePiece.update(); // Add this line to draw the new piece
 
-    myScore.text="SCORE: " + myGameArea.frameNo;
+    myScore.text="TIME: " + myGameArea.frameNo/100;
     myScore.update();
 }
 
