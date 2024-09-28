@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Joystick Example</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas to full screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Game piece
+        let myGamePiece = { x: canvas.width / 2, y: canvas.height / 2, speed: 5 };
+
+        // Joystick settings
+        const joystickRadius = 50;
+        const joystickInnerRadius = 25;
+        let joystickCenterX = canvas.width / 2;
+        let joystickCenterY = canvas.height - 100;
+        let joystickInnerX = joystickCenterX;
+        let joystickInnerY = joystickCenterY;
+        let isTouching = false;
+
+        // Detect if the screen is small or touch-based
+        const isSmallScreen = window.innerWidth < 768 || 'ontouchstart' in window;
+        let isJoystickActive = isSmallScreen;
+
+        // Draw the game piece and joystick only on small screens
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the game piece
+            ctx.fillStyle = "red";
+            ctx.fillRect(myGamePiece.x, myGamePiece.y, 20, 20);
+
+            if (isJoystickActive) {
+                // Draw the joystick outer circle
+                ctx.beginPath();
+                ctx.arc(joystickCenterX, joystickCenterY, joystickRadius, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw the joystick inner circle
+                ctx.beginPath();
+                ctx.arc(joystickInnerX, joystickInnerY, joystickInnerRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = '#333';
+                ctx.fill();
+            }
+        }
+
+        // Update the game piece's position based on joystick movement
+        function updateGamePiece(dx, dy) {
+            myGamePiece.x += dx * myGamePiece.speed;
+            myGamePiece.y += dy * myGamePiece.speed;
+
+            // Keep the game piece within the canvas bounds
+            if (myGamePiece.x < 0) myGamePiece.x = 0;
+            if (myGamePiece.x > canvas.width - 20) myGamePiece.x = canvas.width - 20;
+            if (myGamePiece.y < 0) myGamePiece.y = 0;
+            if (myGamePiece.y > canvas.height - 20) myGamePiece.y = canvas.height - 20;
+
+            draw();
+        }
+
+        // Handle touch events on the canvas
+        if (isJoystickActive) {
+            canvas.addEventListener('touchstart', function (e) {
+                const touch = e.touches[0];
+                const distX = touch.clientX - joystickCenterX;
+                const distY = touch.clientY - joystickCenterY;
+                const distance = Math.sqrt(distX * distX + distY * distY);
+
+                if (distance < joystickRadius) {
+                    isTouching = true;
+                    joystickInnerX = touch.clientX;
+                    joystickInnerY = touch.clientY;
+                }
+            });
+
+            canvas.addEventListener('touchmove', function (e) {
+                if (!isTouching) return;
+
+                const touch = e.touches[0];
+                const distX = touch.clientX - joystickCenterX;
+                const distY = touch.clientY - joystickCenterY;
+                const distance = Math.sqrt(distX * distX + distY * distY);
+
+                // Restrict joystick movement to the outer circle's radius
+                if (distance < joystickRadius) {
+                    joystickInnerX = touch.clientX;
+                    joystickInnerY = touch.clientY;
+                } else {
+                    const angle = Math.atan2(distY, distX);
+                    joystickInnerX = joystickCenterX + joystickRadius * Math.cos(angle);
+                    joystickInnerY = joystickCenterY + joystickRadius * Math.sin(angle);
+                }
+
+                // Calculate direction (dx, dy)
+                const dx = distX / joystickRadius;
+                const dy = distY / joystickRadius;
+
+                updateGamePiece(dx, dy);
+            });
+
+            canvas.addEventListener('touchend', function () {
+                isTouching = false;
+                joystickInnerX = joystickCenterX;
+                joystickInnerY = joystickCenterY;
+            });
+        }
+
+        // Initial draw
+        draw();
+
+        // Listen for window resize to handle screen size changes
+        window.addEventListener('resize', function () {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            joystickCenterX = canvas.width / 2;
+            joystickCenterY = canvas.height - 100;
+            joystickInnerX = joystickCenterX;
+            joystickInnerY = joystickCenterY;
+
+            // Update joystick visibility based on screen size
+            isJoystickActive = window.innerWidth < 768 || 'ontouchstart' in window;
+
+            draw();
+        });
+    </script>
+</body>
+</html>
