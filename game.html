@@ -216,6 +216,11 @@ function component(width, height, x, y, type) {
                 this.x += this.speedX;
                 this.y += this.speedY;
             }
+            for (i = 0; i < obstacles.length; i += 1) {
+                if (this.wallCheck(obstacles[i])){
+                    obstacles[i].revealed = false;
+                }
+            }
         }
         else{
             this.x = this.speedX+myGameArea.canvas.width*0.5 - this.width*0.5;
@@ -335,9 +340,9 @@ document.addEventListener("keypress", function(event) {
 
 document.addEventListener("keyup", function(event) {
     if (event.key === "W" || event.key === "S" || event.key === "w" || event.key === "s")
-        myGamePiece.speedY = 0;
+        myGamePiece.speedY = Math.floor(myGamePiece.speedY*0.5);
     if (event.key === "A" || event.key === "D" || event.key === "a" || event.key === "d")
-        myGamePiece.speedX = 0;
+        myGamePiece.speedX = Math.floor(myGamePiece.speedX*0.5);
 });
 </script>
 </body>
