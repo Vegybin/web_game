@@ -12,51 +12,48 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        background-color: rgb(253, 184, 36);
+        background-color: rgb(255, 255, 255);
+        width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        overflow-y: hidden;
     }
 canvas {
     border:1px solid #d3d3d3;
     background-color: #000000;
 }
-.up{
-  display: flex;
-  justify-content: center;
-  margin: 1rem;
-}
-.btn{
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-}
- button{
-    padding: 2rem;
-    border: 3px solid black;
-    border-radius: 1rem;
-    background-color:rgb(35, 80, 148);
-    color: white;
- }
-    button:hover {
-  background-color: rgb(196, 141, 71);
-  cursor: pointer;
-}
+.ad1, .ad2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            height: 50px;
+        }
+#game-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e0e0e0;
+        }
 
-@media only screen and (min-width: 1024px) {
-    button{
-        display: none;
-    }
-}
+
 </style>
 </head>
 <body onload="startGame()">
-    <div class="up">
-        <button> UP </button>
-    </div>
-    <div class="btn">
-        
-        <button id="btnLeft"> LEFT </button> 
-        <button id="btnDown"> DOWN </button>
-        <button id="btnRight"> RIGHT </button>
-        </div>
+        <div class="ad1">
+            <h1> Hey I am Ad 1! </h1>
+          </div>
+          <div id="game-container">
+
+          </div>
+          <div class="ad2">
+              <h1> Hey I am Ad 2! </h1>
+          </div>
+    
+    
 
 <script>
 var myGamePiece;
@@ -67,8 +64,6 @@ var myScore;
 function startGame() {
     myGamePiece = new component(30, 30, 10, 120, "main");
     mySecondGamePiece = new component(30, 30, 10, 120, "she");
-   
-
     myScore = new component("25px", "Consolas", 10, 30, "text");
     myGameArea.start();
 }
@@ -76,13 +71,18 @@ function startGame() {
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
+        var ad1 = document.getElementsByClassName("ad1")[0];
+        var ad2 = document.getElementsByClassName("ad2")[0];
         this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        this.canvas.height = window.innerHeight-(ad1.offsetHeight+ad2.offsetHeight);
         this.context = this.canvas.getContext("2d");
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+
+        // Append the canvas inside the game-container
+        document.getElementById("game-container").appendChild(this.canvas);
+        
         this.frameNo = 0;
         this.interval = setInterval(updateGameArea, 10);
-        },
+    },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
@@ -135,13 +135,45 @@ function component(width, height, x, y, type) {
             ctx.shadowColor = "transparent"; // Reset shadow 
         }  
         else if(this.type=="she"){
-            ctx.fillStyle = "rgb(255, 29, 141)";
-            ctx.shadowColor = "white"; // Change to desired neon color
-            ctx.shadowBlur = 30; // Adjust for glow effect
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-            ctx.shadowColor = "transparent"; // Reset shadow 
+            let gradient = ctx.createLinearGradient(this.x, this.y, this.x + this.width, this.y + this.height);
+    gradient.addColorStop(0, "rgb(255, 29, 141)"); // Start color
+    gradient.addColorStop(1, "rgb(255, 150, 200)"); // End color
+
+    ctx.fillStyle = gradient; // Apply gradient color
+    
+    // Enhanced neon glow effect
+    ctx.shadowColor = "rgb(255, 105, 180)"; // Neon pink glow
+    ctx.shadowBlur = 40; // Stronger glow
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    
+    // Rounded corners for a softer appearance
+    let cornerRadius = 10;
+    ctx.beginPath();
+    ctx.moveTo(this.x + cornerRadius, this.y);
+    ctx.lineTo(this.x + this.width - cornerRadius, this.y);
+    ctx.quadraticCurveTo(this.x + this.width, this.y, this.x + this.width, this.y + cornerRadius);
+    ctx.lineTo(this.x + this.width, this.y + this.height - cornerRadius);
+    ctx.quadraticCurveTo(this.x + this.width, this.y + this.height, this.x + this.width - cornerRadius, this.y + this.height);
+    ctx.lineTo(this.x + cornerRadius, this.y + this.height);
+    ctx.quadraticCurveTo(this.x, this.y + this.height, this.x, this.y + this.height - cornerRadius);
+    ctx.lineTo(this.x, this.y + cornerRadius);
+    ctx.quadraticCurveTo(this.x, this.y, this.x + cornerRadius, this.y);
+    ctx.closePath();
+    
+    ctx.fill(); // Fill the gamepiece with gradient
+    
+    // Reset shadow after drawing the element
+    ctx.shadowColor = "transparent"; 
+    
+    // Optional: Drop shadow for additional depth
+    ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 4;
+    ctx.shadowOffsetY = 4;
+    
+    // Reset the shadow for next frame
+    ctx.shadowColor = "transparent";
         }
          else if(this.revealed == false){            
             ctx.fillStyle = "rgba(0, 0, 0, 0)";
