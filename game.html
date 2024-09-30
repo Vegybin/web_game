@@ -100,6 +100,7 @@ function component(width, height, x, y, type) {
     this.score = 0;
     this.width = width;
     this.height = height;
+    this.herBlurSpeed = 1;
     this.speedX = 0;
     this.speedY = 0;    
     if(this.type=="she")
@@ -136,44 +137,40 @@ function component(width, height, x, y, type) {
         }  
         else if(this.type=="she"){
             let gradient = ctx.createLinearGradient(this.x, this.y, this.x + this.width, this.y + this.height);
-    gradient.addColorStop(0, "rgb(255, 29, 141)"); // Start color
-    gradient.addColorStop(1, "rgb(255, 150, 200)"); // End color
+            gradient.addColorStop(0, "rgb(255, 29, 141)"); // Start color
+            gradient.addColorStop(1, "rgb(255, 150, 200)"); // End color
 
-    ctx.fillStyle = gradient; // Apply gradient color
+            ctx.fillStyle = gradient; // Apply gradient color
     
-    // Enhanced neon glow effect
-    ctx.shadowColor = "rgb(255, 105, 180)"; // Neon pink glow
-    ctx.shadowBlur = 40; // Stronger glow
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
+            // Enhanced neon glow effect
+            ctx.shadowColor = "rgb(255, 105, 180)"; // Neon pink glow
+            this.blur += this.herBlurSpeed;
+            ctx.shadowBlur = this.blur; // Stronger glow
+            if(this.blur >= 60)
+                this.herBlurSpeed = -1;
+            else if (this.blur <= 20)
+                this.herBlurSpeed = +1;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
     
-    // Rounded corners for a softer appearance
-    let cornerRadius = 10;
-    ctx.beginPath();
-    ctx.moveTo(this.x + cornerRadius, this.y);
-    ctx.lineTo(this.x + this.width - cornerRadius, this.y);
-    ctx.quadraticCurveTo(this.x + this.width, this.y, this.x + this.width, this.y + cornerRadius);
-    ctx.lineTo(this.x + this.width, this.y + this.height - cornerRadius);
-    ctx.quadraticCurveTo(this.x + this.width, this.y + this.height, this.x + this.width - cornerRadius, this.y + this.height);
-    ctx.lineTo(this.x + cornerRadius, this.y + this.height);
-    ctx.quadraticCurveTo(this.x, this.y + this.height, this.x, this.y + this.height - cornerRadius);
-    ctx.lineTo(this.x, this.y + cornerRadius);
-    ctx.quadraticCurveTo(this.x, this.y, this.x + cornerRadius, this.y);
-    ctx.closePath();
+            // Rounded corners for a softer appearance
+            let cornerRadius = 10;
+            ctx.beginPath();
+            ctx.moveTo(this.x + cornerRadius, this.y);
+            ctx.lineTo(this.x + this.width - cornerRadius, this.y);
+            ctx.quadraticCurveTo(this.x + this.width, this.y, this.x + this.width, this.y + cornerRadius);
+            ctx.lineTo(this.x + this.width, this.y + this.height - cornerRadius);
+            ctx.quadraticCurveTo(this.x + this.width, this.y + this.height, this.x + this.width - cornerRadius, this.y + this.height);
+            ctx.lineTo(this.x + cornerRadius, this.y + this.height);
+            ctx.quadraticCurveTo(this.x, this.y + this.height, this.x, this.y + this.height - cornerRadius);
+            ctx.lineTo(this.x, this.y + cornerRadius);
+            ctx.quadraticCurveTo(this.x, this.y, this.x + cornerRadius, this.y);
+            ctx.closePath();
     
-    ctx.fill(); // Fill the gamepiece with gradient
+            ctx.fill(); // Fill the gamepiece with gradient
     
-    // Reset shadow after drawing the element
-    ctx.shadowColor = "transparent"; 
-    
-    // Optional: Drop shadow for additional depth
-    ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 4;
-    ctx.shadowOffsetY = 4;
-    
-    // Reset the shadow for next frame
-    ctx.shadowColor = "transparent";
+            // Reset shadow after drawing the element
+            ctx.shadowColor = "transparent"; 
         }
          else if(this.revealed == false){            
             ctx.fillStyle = "rgba(0, 0, 0, 0)";
@@ -250,7 +247,10 @@ function component(width, height, x, y, type) {
             }
             for (i = 0; i < obstacles.length; i += 1) {
                 if (this.wallCheck(obstacles[i])){
-                    obstacles[i].revealed = false;
+                    if (obstacles[i].blur >= 100)
+                        obstacles[i].revealed = false;
+                    else
+                        obstacles[i].blur += 10
                 }
             }
         }
