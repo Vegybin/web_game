@@ -68,6 +68,41 @@ function startGame() {
     myGameArea.start();
 }
 
+function createWinPopup() {
+    // Create the popup div
+    const popup = document.createElement('div');
+    popup.id = 'winPopup';
+    popup.style.position = 'fixed';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+    popup.style.padding = '10rem';
+    popup.style.backgroundColor = '#fffcf2';
+    popup.style.border = '2px solid black';
+    popup.style.textAlign = 'center';
+    popup.style.display = 'none'; // Hidden initially
+    popup.style.borderRadius='2rem';
+    popup.style.fontFamily="'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif";
+
+    // Create and add the win message
+    const winMessage = document.createElement('h1');
+    winMessage.innerText = 'You Win!';
+    popup.appendChild(winMessage);
+
+    // Create and add the reset button
+    const resetButton = document.createElement('button');
+    resetButton.innerText = 'Play Again';
+    resetButton.style.borderRadius='2rem';
+    resetButton.style.padding='15px';
+    resetButton.addEventListener('click', function() {
+        location.reload(); // Reload the page to reset the game
+    });
+    popup.appendChild(resetButton);
+
+    // Append the popup to the body
+    document.body.appendChild(popup);
+}
+
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
@@ -93,6 +128,14 @@ function r() {
 
 function euclidean_dist(v1, v2) {
     return Math.sqrt((v1[0]-v2[0])*(v1[0]-v2[0])+(v1[1]-v2[1])*(v1[1]-v2[1]));
+}
+
+createWinPopup();
+
+function showWinPopup() {
+    const popup = document.getElementById('winPopup');
+    popup.style.display = 'block'; // Show the popup
+    clearInterval(myGameArea.interval); // Stop the game loop to freeze the canvas
 }
 
 function component(width, height, x, y, type) {
@@ -231,7 +274,7 @@ function component(width, height, x, y, type) {
             var maxDistance = 0;
             var fD = 0;
             if (currentDist < 30){
-               alert("You Win!");
+                showWinPopup();
             }
             if (currentDist < 200){
                 for (let i = 0; i < eightDs.length; i++) {
