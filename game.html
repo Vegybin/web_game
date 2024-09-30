@@ -257,6 +257,24 @@ function component(width, height, x, y, type) {
                     this.y += D[1]*2;
                 }
             }
+            else if(currentDist > Math.min(window.innerHeight,window.innerWidth)*0.4){
+                for (let i = 0; i < eightDs.length; i++) {
+                    const d = eightDs[i];
+                    this.x += d[0];
+                    this.y += d[1];
+                    let e_d = euclidean_dist(this.centre(), myGamePiece.centre());
+                    if (maxDistance < e_d)
+                    {
+                        maxDistance = e_d;
+                        fD = i;
+                    }
+                    this.x -= d[0];
+                    this.y -= d[1];
+                }
+                const D = eightDs[fD];
+                this.x -= D[0]*2;
+                this.y -= D[1]*2;
+            }
             else{
                 if(Math.random()<0.01){
                     const D = eightDs[Math.floor(Math.random()*8.0)];
