@@ -233,14 +233,20 @@ function component(width, height, x, y, type) {
                     this.y -= d[1];
                 }
                 const D = eightDs[fD];
-                this.x += D[0]*2;
-                this.y += D[1]*2;
+                if (Math.random() < 0.5){
+                    this.x += D[0];
+                    this.y += D[1];
+                }
+                else{
+                    this.x += D[0]*2;
+                    this.y += D[1]*2;
+                }
             }
             else{
                 if(Math.random()<0.01){
                     const D = eightDs[Math.floor(Math.random()*8.0)];
-                    this.speedX = D[0]*2;
-                    this.speedY = D[1]*2;
+                    this.speedX = D[0];
+                    this.speedY = D[1];
                 }
                 this.x += this.speedX;
                 this.y += this.speedY;
