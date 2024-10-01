@@ -216,8 +216,9 @@ function component(width, height, x, y, type) {
             ctx.shadowColor = "transparent"; 
         }
         else if(type == "border"){
-            ctx.strokeStyle = "yellow";
-            ctx.shadowColor = 'rgb(' + this.red + "," + this.green + "," + this.blue + ')'; // Change to desired neon color
+            ctx.strokeStyle = "rgb(255,100,0)";
+            ctx.lineWidth = 80;
+            ctx.shadowColor = "rgb(255,100,0)"; // Change to desired neon color
             ctx.shadowBlur = this.blur; // Adjust for glow effect
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
@@ -378,6 +379,7 @@ function component(width, height, x, y, type) {
 
 
 var x, height, gap, minSize, maxSize, minGap, maxGap;
+myObstacles.push(new component(4100, 4100, -2000, -2000, "border"));
 for (i=0; i< 40; i+=1){
     for (j=0; j<20; j+=1){
         minSize = 80;
@@ -395,7 +397,6 @@ for (i=0; i< 40; i+=1){
             myObstacles.push(new component(size, 12, x, y));
     }
 }
-myObstacles.push(new component(4000, 4000, -2000, -2000, "border"));
 
 function updateGameArea() {
     
