@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title> Catch Her</title>
+    <link rel="icon" href="not_a_ball.png" type="image/x-icon" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <style>
     *{
@@ -43,6 +45,12 @@ canvas {
 </style>
 </head>
 <body onload="startGame()">
+    <audio id="wHit">
+        <source src="mouse-click.mp3" type="audio/mpeg">
+      </audio>
+      <audio id="sheSlays">
+        <source src="synth.mp3" type="audio/mpeg">
+      </audio>
         <div class="ad1">
             <h1> Hey I am Ad 1! </h1>
           </div>
@@ -56,6 +64,8 @@ canvas {
     
 
 <script>
+    var sheSlays = document.getElementById("sheSlays");
+    var wHit = document.getElementById("wHit");
 var myGamePiece;
 var myObstacles = [];
 var myScore;  
@@ -292,7 +302,11 @@ function component(width, height, x, y, type) {
                     this.y -= d[1];
                 }
                 const D = eightDs[fD];
-                if (Math.random() < 0.5){
+                if(myGameArea.frameNo*0.01 < 60){
+                    this.x += D[0]*2;
+                    this.y += D[1]*2;
+                }
+                else if (Math.random() < 0.8){
                     this.x += D[0];
                     this.y += D[1];
                 }
@@ -330,8 +344,11 @@ function component(width, height, x, y, type) {
             }
             for (i = 0; i < obstacles.length; i += 1) {
                 if (this.wallCheck(obstacles[i])){
-                    if (obstacles[i].blur >= 100)
+                    if (obstacles[i].blur >= 100){
+                        if (obstacles[i].revealed)
+                            sheSlays.play();
                         obstacles[i].revealed = false;
+                    }
                     else
                         obstacles[i].blur += 10
                 }
@@ -351,6 +368,7 @@ function component(width, height, x, y, type) {
                     this.speedX = 0;
                     this.speedY = 0;
                     obstacles[i].revealed = true;
+                    wHit.play();
                     obstacles[i].blur = 40;
                     red_ = obstacles[i].red+30;
                     green_ = obstacles[i].green+30;
