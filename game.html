@@ -71,6 +71,8 @@ canvas {
 var myGamePiece;
 var myObstacles = [];
 var myScore;  
+var keysPressed = {};
+
 
 // function to start game
 function startGame() {
@@ -536,40 +538,37 @@ function updateGameArea() {
     myThirdGamePiece.update(); // Add this line to draw the new piece
     myScore.text="TIME: " + myGameArea.frameNo/100;
     myScore.update();
-}
-
-function everyinterval(n) {
-    if ((myGameArea.frameNo/n) % 1 == 0) {return true;}
-    return false;
-}
-
-document.addEventListener("keypress", function(event) {
-    if (event.key === "W" || event.key === "w" ) {
-        event.preventDefault();
+    if (keysPressed['W'] || keysPressed['w'] ) {
         myGamePiece.speedY -= 2;
     }
-    else if (event.key === "A" || event.key === "a" ) {
-        event.preventDefault();
+    else if (keysPressed['A'] || keysPressed['a'] ) {
         myGamePiece.speedX -= 2;
     }
-    else if (event.key === "S" || event.key === "s" ) {
-        event.preventDefault();
+    else if (keysPressed['S'] || keysPressed['s'] ) {
         myGamePiece.speedY += 2;
     }
-    else if (event.key === "D" || event.key === "d" ) {
-        event.preventDefault();
+    else if (keysPressed['D'] || keysPressed['d'] ) {
         myGamePiece.speedX += 2;
     }
     if (myGamePiece.speedX>8) myGamePiece.speedX=8;
     if (myGamePiece.speedY>8) myGamePiece.speedY=8;
     if (myGamePiece.speedX<-8) myGamePiece.speedX=-8;
     if (myGamePiece.speedY<-8) myGamePiece.speedY=-8;
+}
+
+function everyinterval(n) {
+    if ((myGameArea.frameNo/n) % 1 == 0) {return true;}
+    return false;
+}
+document.addEventListener("keydown", function(event) {
+    keysPressed[event.key] = true;
 });
 
 document.addEventListener("keyup", function(event) {
-    if (event.key === "W" || event.key === "S" || event.key === "w" || event.key === "s")
+    keysPressed[event.key] = false;
+    if (keysPressed['W'] || keysPressed['w'] || keysPressed['S'] || keysPressed['s'] )
         myGamePiece.speedY = Math.floor(myGamePiece.speedY*0.5);
-    if (event.key === "A" || event.key === "D" || event.key === "a" || event.key === "d")
+    if (keysPressed['A'] || keysPressed['a'] || keysPressed['D'] || keysPressed['d'] )
         myGamePiece.speedX = Math.floor(myGamePiece.speedX*0.5);
 });
 </script>
