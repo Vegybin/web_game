@@ -83,6 +83,7 @@ function startGame() {
     myGameArea.start();
 }
 
+
 function createWinPopup() {
     // Create the popup div
     const popup = document.createElement('div');
@@ -109,6 +110,7 @@ function createWinPopup() {
     resetButton.innerText = 'Play Again';
     resetButton.style.borderRadius='2rem';
     resetButton.style.padding='15px';
+    resetButton.style.marginTop = '50px'; // Add margin to create space between message and button
     resetButton.addEventListener('click', function() {
         location.reload(); // Reload the page to reset the game
     });
@@ -117,6 +119,93 @@ function createWinPopup() {
     // Append the popup to the body
     document.body.appendChild(popup);
 }
+
+function createInfoBox() {
+    // Create the info box div
+    const infoBox = document.createElement('div');
+    infoBox.classList.add('infoBox');
+    infoBox.style.position = 'fixed';
+    infoBox.style.top = '50%';
+    infoBox.style.left = '50%';
+    infoBox.style.transform = 'translate(-50%, -50%)';
+    infoBox.style.width = '60%'; // Set a responsive width
+    infoBox.style.maxWidth = '600px'; // Maximum width
+    infoBox.style.padding = '2rem';
+    infoBox.style.backgroundColor = '#fffcf2';
+    infoBox.style.border = '2px solid black';
+    infoBox.style.textAlign = 'center';
+    infoBox.style.borderRadius = '2rem';
+    infoBox.style.fontFamily = "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif";
+    infoBox.style.overflowY = 'hidden'; // Allow scrolling if the content exceeds the box size
+    infoBox.style.maxHeight = 'hidden'; // Set a max height for the box to prevent overflow
+
+
+     // Add game name heading
+     const gameName = document.createElement('h1');
+    gameName.innerText = 'Catchher.io';
+    gameName.style.margin = '0'; // Remove default margins
+    gameName.style.padding = '0'; // Remove default padding
+    gameName.style.fontSize = '2rem'; // Set a larger font size
+    gameName.style.textAlign = 'center'; // Center the heading
+    infoBox.appendChild(gameName);
+
+    // Add story heading
+    const story = document.createElement('h2');
+    story.innerText = 'Story:';
+    story.style.marginTop = '1rem'; // Add margin to separate from the game name
+    story.style.fontSize = '1.5rem'; // Slightly smaller than game name
+    story.style.textAlign = 'left'; // left the heading
+    infoBox.appendChild(story);
+
+
+    const para = document.createElement('p');
+    para.innerText = "A main character, a villain and a love interest and a few obstacles for our hero- these combined makes the foundation of our game. You have to chase her and the villain will be chasing you! Do not get caught by villain and instead, catch your princess to win the game.The main character won't be able to leave the boundary called \"league\", but the love interest can, making her \"out of league\" when she is outside the boundary.Do not worry, She will find a way to get near you but if you get too close to her, she will go away - just like a cat.";
+    para.style.marginBottom = '1.5rem'; // Add margin for space below the paragraph
+    para.style.marginLeft = '.2rem'; //add margin for space at the left side
+    para.style.fontSize = '1rem'; // Set a reasonable font size
+    para.style.lineHeight = '1.5'; // Set line height for better readability
+    para.style.textAlign = 'justify'; // Align text for a neat layout
+    infoBox.appendChild(para);
+
+    const controls = document.createElement('h2');
+    controls.innerText = 'Controls:';
+    controls.style.marginTop = '1rem'; // Add margin to separate from the game name
+    controls.style.fontSize = '1.5rem'; // Slightly smaller than game name
+    controls.style.textAlign = 'left'; // left the heading
+    infoBox.appendChild(controls);
+
+    const keys = document.createElement('p');
+    keys.innerText = "W - Up\nA - Left\nS - Down\nD - Right";
+    keys.style.marginBottom = '1.5rem'; // Add margin for space below the paragraph
+    keys.style.marginLeft = '.2rem'; //add margin for space at the left side
+    keys.style.fontSize = '1rem'; // Set a reasonable font size
+    keys.style.lineHeight = '1.5'; // Set line height for better readability
+    keys.style.textAlign = 'left'; // Align text for a neat layout
+    infoBox.appendChild(keys);
+
+    // Create and add the Play Game button
+    const playButton = document.createElement('button');
+    playButton.innerText = 'Play Game';
+    playButton.style.borderRadius = '2rem';
+    playButton.style.padding = '15px';
+    playButton.style.marginTop = '50px'; // Add margin to create space between heading and button
+    playButton.addEventListener('click', function() {
+        infoBox.style.display = 'none';  // Hide the info box on button click
+        startGame();  // Call the function to start the game
+    });
+    infoBox.appendChild(playButton);
+
+    // Append the info box to the body
+    document.body.appendChild(infoBox);
+}
+
+// Call createInfoBox when the page loads
+window.onload = function() {
+    createInfoBox();
+    startGame();
+    clearInterval(myGameArea.interval); // Add your canvas-related function here
+};
+
 
 function createLosePopup() {
     // Create the popup div
@@ -135,19 +224,21 @@ function createLosePopup() {
     popup.style.fontFamily="'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif";
 
     // Create and add the win message
-    const winMessage = document.createElement('h1');
-    winMessage.innerText = 'You Lose!';
-    popup.appendChild(winMessage);
+    const loseMessage = document.createElement('h1');
+    loseMessage.innerText = 'You Lose!';
+
+    popup.appendChild(loseMessage);
 
     // Create and add the reset button
-    const resetButton = document.createElement('button');
-    resetButton.innerText = 'Play Again';
-    resetButton.style.borderRadius='2rem';
-    resetButton.style.padding='15px';
-    resetButton.addEventListener('click', function() {
+    const playAgainButton = document.createElement('button');
+    playAgainButton.innerText = 'Play Again';
+    playAgainButton.style.borderRadius='2rem';
+    playAgainButton.style.padding='15px';
+    playAgainButton.style.marginTop = '50px'; // Add margin to create space between message and button
+    playAgainButton.addEventListener('click', function() {
         location.reload(); // Reload the page to reset the game
     });
-    popup.appendChild(resetButton);
+    popup.appendChild(playAgainButton);
 
     // Append the popup to the body
     document.body.appendChild(popup);
@@ -195,6 +286,7 @@ function showLosePopup() {
     popup.style.display = 'block'; // Show the popup
     clearInterval(myGameArea.interval); // Stop the game loop to freeze the canvas
 }
+
 
 function component(width, height, x, y, type) {
     this.type = type;
