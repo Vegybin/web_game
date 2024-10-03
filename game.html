@@ -76,6 +76,7 @@ var myScore;
 function startGame() {
     myGamePiece = new component(30, 30, 10, 120, "main");
     mySecondGamePiece = new component(30, 30, 10, 120, "she");
+    myThirdGamePiece = new component(30, 30, 10, 120, "villain");
     myScore = new component("25px", "Consolas", 10, 30, "text");
     myGameArea.start();
 }
@@ -99,6 +100,41 @@ function createWinPopup() {
     // Create and add the win message
     const winMessage = document.createElement('h1');
     winMessage.innerText = 'You Win!';
+    popup.appendChild(winMessage);
+
+    // Create and add the reset button
+    const resetButton = document.createElement('button');
+    resetButton.innerText = 'Play Again';
+    resetButton.style.borderRadius='2rem';
+    resetButton.style.padding='15px';
+    resetButton.addEventListener('click', function() {
+        location.reload(); // Reload the page to reset the game
+    });
+    popup.appendChild(resetButton);
+
+    // Append the popup to the body
+    document.body.appendChild(popup);
+}
+
+function createLosePopup() {
+    // Create the popup div
+    const popup = document.createElement('div');
+    popup.id = 'losePopup';
+    popup.style.position = 'fixed';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+    popup.style.padding = '10rem';
+    popup.style.backgroundColor = '#fffcf2';
+    popup.style.border = '2px solid black';
+    popup.style.textAlign = 'center';
+    popup.style.display = 'none'; // Hidden initially
+    popup.style.borderRadius='2rem';
+    popup.style.fontFamily="'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif";
+
+    // Create and add the win message
+    const winMessage = document.createElement('h1');
+    winMessage.innerText = 'You Lose!';
     popup.appendChild(winMessage);
 
     // Create and add the reset button
@@ -150,6 +186,14 @@ function showWinPopup() {
     clearInterval(myGameArea.interval); // Stop the game loop to freeze the canvas
 }
 
+createLosePopup();
+
+function showLosePopup() {
+    const popup = document.getElementById('losePopup');
+    popup.style.display = 'block'; // Show the popup
+    clearInterval(myGameArea.interval); // Stop the game loop to freeze the canvas
+}
+
 function component(width, height, x, y, type) {
     this.type = type;
     this.score = 0;
@@ -158,6 +202,11 @@ function component(width, height, x, y, type) {
     this.herBlurSpeed = 1;
     this.speedX = 0;
     this.speedY = 0;    
+    if(this.type=="villain")
+{
+        x = window.innerWidth*0.5 - this.width*0.5 - Math.random()*100-50;
+        y = window.innerHeight*0.5 - this.height*0.5 - Math.random()*100-50;
+}
     if(this.type=="she")
 {
         x = window.innerWidth*0.5 - this.width*0.5 + Math.random()*100+50;
@@ -184,6 +233,15 @@ function component(width, height, x, y, type) {
         else if(this.type=="main"){
             ctx.fillStyle = "white";
             ctx.shadowColor = "rgb(243, 58, 106)"; // Change to desired neon color
+            ctx.shadowBlur = 30; // Adjust for glow effect
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.shadowColor = "transparent"; // Reset shadow 
+        }
+        else if (this.type=="villain"){
+            ctx.fillStyle = "yellow";
+            ctx.shadowColor = "yellow"; // Change to desired neon color
             ctx.shadowBlur = 30; // Adjust for glow effect
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
@@ -279,7 +337,44 @@ function component(width, height, x, y, type) {
         }
     }
     this.newPos = function(obstacles) {
-        if (this.type == "she"){
+        if (this.type == "villain"){
+            this.x -= myGamePiece.speedX;
+            this.y -= myGamePiece.speedY;
+            var currentDist = euclidean_dist(this.centre(), myGamePiece.centre());
+            var eightDs = [[0,1],[1,0],[1,1],[-1,0],[0,-1],[-1,-1],[-1, 1], [1, -1]];
+            var maxDistance = 0;
+            var fD = 0;
+            if (currentDist < 30){
+                showLosePopup();
+            }
+            for (let i = 0; i < eightDs.length; i++) {
+                const d = eightDs[i];
+                this.x += d[0];
+                this.y += d[1];
+                let e_d = euclidean_dist(this.centre(), myGamePiece.centre());
+                if (maxDistance < e_d){
+                    maxDistance = e_d;
+                    fD = i;
+                }
+                this.x -= d[0];
+                this.y -= d[1];
+            }
+            const D = eightDs[fD];
+            this.x -= D[0]*0.69;
+            this.y -= D[1]*0.69;
+            for (i = 0; i < obstacles.length; i += 1) {
+                if (this.wallCheck(obstacles[i])){
+                    if (obstacles[i].blur >= 100){
+                        if (obstacles[i].revealed)
+                            sheSlays.play();
+                        obstacles[i].revealed = false;
+                    }
+                    else
+                        obstacles[i].blur += 10
+                }
+            }
+        }
+        else if (this.type == "she"){
             this.x -= myGamePiece.speedX;
             this.y -= myGamePiece.speedY;
             var currentDist = euclidean_dist(this.centre(), myGamePiece.centre());
@@ -308,13 +403,9 @@ function component(width, height, x, y, type) {
                     this.x += D[0]*2;
                     this.y += D[1]*2;
                 }
-                else if (Math.random() < 0.8){
-                    this.x += D[0];
-                    this.y += D[1];
-                }
                 else{
-                    this.x += D[0]*2;
-                    this.y += D[1]*2;
+                    this.x += D[0]*1.2;
+                    this.y += D[1]*1.2;
                 }
             }
             else if(currentDist > Math.min(window.innerHeight,window.innerWidth)*0.4){
@@ -441,7 +532,8 @@ function updateGameArea() {
       // Add this line for the new piece
     mySecondGamePiece.newPos(myObstacles);
     mySecondGamePiece.update(); // Add this line to draw the new piece
-
+    myThirdGamePiece.newPos(myObstacles);
+    myThirdGamePiece.update(); // Add this line to draw the new piece
     myScore.text="TIME: " + myGameArea.frameNo/100;
     myScore.update();
 }
