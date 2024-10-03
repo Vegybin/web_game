@@ -159,7 +159,7 @@ function createInfoBox() {
 
 
     const para = document.createElement('p');
-    para.innerText = "A main character, a villain and a love interest and a few obstacles for our hero- these combined makes the foundation of our game. You have to chase her and the villain will be chasing you! Do not get caught by villain and instead, catch your princess to win the game.The main character won't be able to leave the boundary called \"league\", but the love interest can, making her \"out of league\" when she is outside the boundary.Do not worry, She will find a way to get near you but if you get too close to her, she will go away - just like a cat.";
+    para.innerText = "A main character, a villain and a love interest and a few obstacles for our hero- these combined makes the foundation of our game. You have to chase her and the villain will be chasing you! Do not get caught by villain and instead, catch your princess to win the game. The main character won't be able to leave the boundary called \"league\", but the love interest can, making her \"out of league\" when she is outside the boundary. Do not worry, She will find a way to get near you but if you get too close to her, she will go away - just like a cat.";
     para.style.marginBottom = '1.5rem'; // Add margin for space below the paragraph
     para.style.marginLeft = '.2rem'; //add margin for space at the left side
     para.style.fontSize = '1rem'; // Set a reasonable font size
@@ -320,7 +320,7 @@ function component(width, height, x, y, type) {
     this.update = function() {
         ctx = myGameArea.context;
         if (this.type == "text") {
-            ctx.font = this.width + " " + this.height;
+            ctx.font = "30px Consolas";
             ctx.fillStyle = "white";
             ctx.fillText(this.text, this.x, this.y);
         }
@@ -631,16 +631,16 @@ function updateGameArea() {
     myScore.text="TIME: " + myGameArea.frameNo/100;
     myScore.update();
     if (keysPressed['W'] || keysPressed['w'] ) {
-        myGamePiece.speedY -= 2;
+        myGamePiece.speedY -= 0.2;
     }
     else if (keysPressed['A'] || keysPressed['a'] ) {
-        myGamePiece.speedX -= 2;
+        myGamePiece.speedX -= 0.2;
     }
     else if (keysPressed['S'] || keysPressed['s'] ) {
-        myGamePiece.speedY += 2;
+        myGamePiece.speedY += 0.2;
     }
     else if (keysPressed['D'] || keysPressed['d'] ) {
-        myGamePiece.speedX += 2;
+        myGamePiece.speedX += 0.2;
     }
     if (myGamePiece.speedX>8) myGamePiece.speedX=8;
     if (myGamePiece.speedY>8) myGamePiece.speedY=8;
