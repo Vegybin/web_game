@@ -281,7 +281,6 @@ createWinPopup();
 function showWinPopup() {
     const popup = document.getElementById('winPopup');
     popup.style.display = 'block'; // Show the popup
-    clearInterval(myGameArea.interval); // Stop the game loop to freeze the canvas
 }
 
 createLosePopup();
@@ -289,7 +288,7 @@ createLosePopup();
 function showLosePopup() {
     const popup = document.getElementById('losePopup');
     popup.style.display = 'block'; // Show the popup
-    clearInterval(myGameArea.interval); // Stop the game loop to freeze the canvas
+    // clearInterval(myGameArea.interval); // Stop the game loop to freeze the canvas
 }
 
 
@@ -443,9 +442,10 @@ function component(width, height, x, y, type) {
             var eightDs = [[0,1],[1,0],[1,1],[-1,0],[0,-1],[-1,-1],[-1, 1], [1, -1]];
             var maxDistance = 0;
             var fD = 0;
-            if (currentDist < 30){
-                showLosePopup();
-            }
+            if (currentDist < 30) {
+                clearInterval(myGameArea.interval); // Stop the game loop to freeze the canvas
+                setTimeout(showLosePopup, 1000); // Call showLosePopup after 1000 milliseconds (1 second)
+}
             for (let i = 0; i < eightDs.length; i++) {
                 const d = eightDs[i];
                 this.x += d[0];
@@ -481,7 +481,8 @@ function component(width, height, x, y, type) {
             var maxDistance = 0;
             var fD = 0;
             if (currentDist < 30){
-                showWinPopup();
+                clearInterval(myGameArea.interval); // Stop the game loop to freeze the canvas
+                setTimeout(showWinPopup,1000); // Call showWinPopup after 1000 milliseconds (1 second)
             }
             if (currentDist < 200){
                 for (let i = 0; i < eightDs.length; i++) {
