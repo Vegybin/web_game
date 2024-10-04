@@ -60,6 +60,9 @@ canvas {
           <div class="ad2">
               <h1> Hey I am Ad 2! </h1>
           </div>
+          <div style="display:none;">
+            <img id="background_png"src="background.png">
+            </div>
     
     
 
@@ -72,6 +75,7 @@ var myGamePiece;
 var myObstacles = [];
 var myScore;  
 var keysPressed = {};
+var bg_image = document.getElementById("background_png");
 
 
 // function to start game
@@ -261,6 +265,7 @@ var myGameArea = {
     },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.drawImage(bg_image, 0, 0);
     }
 }
 function r() { 
