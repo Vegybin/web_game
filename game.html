@@ -34,7 +34,7 @@ canvas {
 
 </style>
 </head>
-<body onload="startGame()">
+<body onload="startGame()" onResize="window.location.href = window.location.href;">
     <audio id="wHit">
         <source src="wHit.mp3" type="audio/mpeg">
       </audio>
@@ -140,8 +140,8 @@ function createInfoBox() {
     infoBox.style.textAlign = 'center';
     infoBox.style.borderRadius = '2rem';
     infoBox.style.fontFamily = "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif";
-    infoBox.style.overflowY = 'hidden'; // Allow scrolling if the content exceeds the box size
-    infoBox.style.maxHeight = 'hidden'; // Set a max height for the box to prevent overflow
+    infoBox.style.overflowY = 'auto'; // Allow scrolling if the content exceeds the box size
+    infoBox.style.maxHeight = '600px'; // Set a max height for the box to prevent overflow
 
 
      // Add game name heading
@@ -192,7 +192,7 @@ function createInfoBox() {
     playButton.innerText = 'Play Game';
     playButton.style.borderRadius = '2rem';
     playButton.style.padding = '15px';
-    playButton.style.marginTop = '50px'; // Add margin to create space between heading and button
+    playButton.style.marginTop = '30px'; // Add margin to create space between heading and button
     playButton.addEventListener('click', function() {
         infoBox.style.display = 'none';  // Hide the info box on button click
         startGame();  // Call the function to start the game
