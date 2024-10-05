@@ -634,11 +634,11 @@ function updateGameArea() {
     if (keysPressed['W'] || keysPressed['w'] ) {
         myGamePiece.speedY -= 0.2;
     }
-    else if (keysPressed['A'] || keysPressed['a'] ) {
-        myGamePiece.speedX -= 0.2;
-    }
     else if (keysPressed['S'] || keysPressed['s'] ) {
         myGamePiece.speedY += 0.2;
+    }
+    if (keysPressed['A'] || keysPressed['a'] ) {
+        myGamePiece.speedX -= 0.2;
     }
     else if (keysPressed['D'] || keysPressed['d'] ) {
         myGamePiece.speedX += 0.2;
