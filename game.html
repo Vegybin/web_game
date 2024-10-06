@@ -68,6 +68,7 @@ canvas {
     var win1 = document.getElementById("win1");
     var win2 = document.getElementById("win2");
     var gameIsOn = false;
+    loseSound.volume = 0.69;
     win1.volume = 0.6;
     win2.volume = 0.5;
     wHit.volume = 0.45;
@@ -84,7 +85,7 @@ function startGame() {
     myGamePiece = new component(30, 30, 10, 120, "main");
     mySecondGamePiece = new component(30, 30, 10, 120, "she");
     myThirdGamePiece = new component(30, 30, 10, 120, "villain");
-    myScore = new component("25px", "Consolas", 10, 30, "text");
+    myScore = new component("25px", "Consolas", 90, 30, "text");
     myGameArea.start();
 }
 
@@ -268,6 +269,122 @@ var myGameArea = {
         this.context.drawImage(bg_image, 0, 0);
     }
 }
+const buttonSize = 50;
+const buttonSpacing = 10;
+const transparency = 0.5;
+
+    // WASD positions relative to the bottom center of the canvas
+    function getButtonPositions() {
+      return [
+        { key: '↑', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize * 2 - buttonSpacing },  // W
+        { key: '←', x: myGameArea.canvas.width / 2 - buttonSize - buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // A
+        { key: '↓', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize },  // S
+        { key: '→', x: myGameArea.canvas.width / 2 + buttonSize + buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // D
+      ];
+    }
+
+    // Function to draw buttons
+function drawButton(x, y, key) {
+      myGameArea.canvas.getContext("2d").globalAlpha = transparency;
+      myGameArea.canvas.getContext("2d").fillStyle = 'gray';
+      myGameArea.canvas.getContext("2d").fillRect(x - buttonSize / 2, y - buttonSize / 2, buttonSize, buttonSize);
+      
+      myGameArea.canvas.getContext("2d").globalAlpha = 1.0;  // Reset transparency for text
+      myGameArea.canvas.getContext("2d").fillStyle = 'white';
+      myGameArea.canvas.getContext("2d").font = '20px Arial';
+      myGameArea.canvas.getContext("2d").textAlign = 'center';
+      myGameArea.canvas.getContext("2d").textBaseline = 'middle';
+      myGameArea.canvas.getContext("2d").fillText(key, x, y); 
+    }
+
+    // Draw all WASD buttons
+function drawButtons() {
+    const buttonPositions = getButtonPositions();
+    buttonPositions.forEach(button => {
+    drawButton(button.x, button.y, button.key);
+      });
+    }
+
+// Function to detect if the button was clicked
+function isButtonPressed(x, y, button) {
+  return (
+    x >= button.x - buttonSize / 2 &&
+    x <= button.x + buttonSize / 2 &&
+    y >= button.y - buttonSize / 2 &&
+    y <= button.y + buttonSize / 2
+  );
+}
+
+// Handle button press
+function handleButtonPress(button) {
+  if (button.key=="↑"){
+  keysPressed['W'] = true;
+  keysPressed['S'] = false;
+  }
+  else if(button.key=="↓"){
+    keysPressed['S'] = true;
+    keysPressed['W'] = false;
+  }
+  if (button.key=="←"){
+    keysPressed['A'] = true;
+    keysPressed['D'] = false;
+  }
+  else if(button.key=="→"){
+    keysPressed['D'] = true;
+    keysPressed['A'] = false;
+  }
+  // Add your desired behavior for each button press here
+}
+
+// Mouse click event listener
+myGameArea.canvas.addEventListener('mousedown', (event) => {
+  const rect = myGameArea.canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  // Check if the click intersects with any button
+  const buttonPositions = getButtonPositions();
+  buttonPositions.forEach(button => {
+    if (isButtonPressed(x, y, button)) {
+      handleButtonPress(button);
+    }
+  });
+});
+
+// Function to detect if the button was clicked
+function isButtonReleased(x, y, button) {
+  return (
+    x >= button.x - buttonSize / 2 &&
+    x <= button.x + buttonSize / 2 &&
+    y >= button.y - buttonSize / 2 &&
+    y <= button.y + buttonSize / 2
+  );
+}
+
+// Handle button press
+function handleButtonRelease(button) {
+  keysPressed['W'] = false;
+  myGamePiece.speedY = Math.floor(myGamePiece.speedY*0.5);
+      keysPressed['S'] = false;
+    keysPressed['A'] = false;
+    myGamePiece.speedX = Math.floor(myGamePiece.speedX*0.5);
+    keysPressed['D'] = false;
+  // Add your desired behavior for each button press here
+}
+
+// Mouse click event listener
+myGameArea.canvas.addEventListener('mouseup', (event) => {
+  const rect = myGameArea.canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  // Check if the click intersects with any button
+  const buttonPositions = getButtonPositions();
+  buttonPositions.forEach(button => {
+      handleButtonRelease(button);
+  });
+});
+
 function r() { 
     return Math.floor(Math. random() * 224) + 1; 
 } 
@@ -611,6 +728,7 @@ for (i=0; i< 40; i+=1){
 function updateGameArea() {
     
     myGameArea.clear();
+    drawButtons();
     myGameArea.frameNo += 1;
     if (myGameArea.frameNo == 1 || everyinterval(150)) {
         x = myGameArea.canvas.width;
