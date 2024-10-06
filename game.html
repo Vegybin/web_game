@@ -269,43 +269,48 @@ var myGameArea = {
         this.context.drawImage(bg_image, 0, 0);
     }
 }
-const buttonSize = 50;
+const buttonSize = 80;
 const buttonSpacing = 10;
 const transparency = 0.5;
 
-    // WASD positions relative to the bottom center of the canvas
-    function getButtonPositions() {
-      return [
-        { key: '↑', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize * 2 - buttonSpacing },  // W
-        { key: '←', x: myGameArea.canvas.width / 2 - buttonSize - buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // A
-        { key: '↓', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize },  // S
-        { key: '→', x: myGameArea.canvas.width / 2 + buttonSize + buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // D
-      ];
-    }
+let buttonPositions = [];
+let pressedButton = null;  // Track which button is pressed
+let isDragging = false;    // Track if the touch is being dragged
 
-    // Function to draw buttons
+// Arrow keys positions relative to the bottom center of the canvas
+function getButtonPositions() {
+  return [
+    { key: '↑', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize * 2 - buttonSpacing },  // Up
+    { key: '←', x: myGameArea.canvas.width / 2 - buttonSize - buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // Left
+    { key: '↓', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize },  // Down
+    { key: '→', x: myGameArea.canvas.width / 2 + buttonSize + buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // Right
+  ];
+}
+
+// Function to draw buttons
 function drawButton(x, y, key) {
-      myGameArea.canvas.getContext("2d").globalAlpha = transparency;
-      myGameArea.canvas.getContext("2d").fillStyle = 'gray';
-      myGameArea.canvas.getContext("2d").fillRect(x - buttonSize / 2, y - buttonSize / 2, buttonSize, buttonSize);
-      
-      myGameArea.canvas.getContext("2d").globalAlpha = 1.0;  // Reset transparency for text
-      myGameArea.canvas.getContext("2d").fillStyle = 'white';
-      myGameArea.canvas.getContext("2d").font = '20px Arial';
-      myGameArea.canvas.getContext("2d").textAlign = 'center';
-      myGameArea.canvas.getContext("2d").textBaseline = 'middle';
-      myGameArea.canvas.getContext("2d").fillText(key, x, y); 
-    }
+  const ctx = myGameArea.canvas.getContext("2d");
+  ctx.globalAlpha = transparency;
+  ctx.fillStyle = 'gray';
+  ctx.fillRect(x - buttonSize / 2, y - buttonSize / 2, buttonSize, buttonSize);
 
-    // Draw all WASD buttons
+  ctx.globalAlpha = 1.0;  // Reset transparency for text
+  ctx.fillStyle = 'white';
+  ctx.font = '20px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(key, x, y);
+}
+
+// Draw all arrow buttons
 function drawButtons() {
-    const buttonPositions = getButtonPositions();
-    buttonPositions.forEach(button => {
+  buttonPositions = getButtonPositions();
+  buttonPositions.forEach(button => {
     drawButton(button.x, button.y, button.key);
-      });
-    }
+  });
+}
 
-// Function to detect if the button was clicked
+// Function to detect if the button was touched
 function isButtonPressed(x, y, button) {
   return (
     x >= button.x - buttonSize / 2 &&
@@ -333,56 +338,83 @@ function handleButtonPress(button) {
     keysPressed['D'] = true;
     keysPressed['A'] = false;
   }
-  // Add your desired behavior for each button press here
+  // Add behavior for button press here
 }
 
-// Mouse click event listener
-myGameArea.canvas.addEventListener('mousedown', (event) => {
-  const rect = myGameArea.canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
+// Handle button release
+function handleButtonRelease(button) {
+  if (button.key=="↑"){
+  keysPressed['W'] = false;
+  myGamePiece.speedY = Math.floor(myGamePiece.speedY*0.5);
+  }
+  else if(button.key=="↓"){
+    keysPressed['S'] = false;
+    myGamePiece.speedY = Math.floor(myGamePiece.speedY*0.5);
+  }
+  if (button.key=="←"){
+    keysPressed['A'] = false;
+    myGamePiece.speedX = Math.floor(myGamePiece.speedX*0.5);
+  }
+  else if(button.key=="→"){
+    keysPressed['D'] = false;
+    myGamePiece.speedX = Math.floor(myGamePiece.speedX*0.5);
+  }
+  // Add behavior for button release here
+}
 
-  // Check if the click intersects with any button
-  const buttonPositions = getButtonPositions();
+// Helper function to get touch coordinates relative to the canvas
+function getTouchPosition(touchEvent) {
+  const rect = myGameArea.canvas.getBoundingClientRect();
+  const touch = touchEvent.touches[0];  // Get the first touch point
+  return {
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top
+  };
+}
+
+// Touch start event listener (button press)
+myGameArea.canvas.addEventListener('touchstart', (event) => {
+  event.preventDefault();  // Prevent default touch behavior like scrolling
+  const { x, y } = getTouchPosition(event);
+
+  // Check if the touch intersects with any button
   buttonPositions.forEach(button => {
     if (isButtonPressed(x, y, button)) {
+      pressedButton = button;  // Track which button is pressed
       handleButtonPress(button);
+      isDragging = true; // Start tracking drag
     }
   });
 });
 
-// Function to detect if the button was clicked
-function isButtonReleased(x, y, button) {
-  return (
-    x >= button.x - buttonSize / 2 &&
-    x <= button.x + buttonSize / 2 &&
-    y >= button.y - buttonSize / 2 &&
-    y <= button.y + buttonSize / 2
-  );
-}
+// Touch start event listener (button press)
+myGameArea.canvas.addEventListener('touchcancel', (event) => {
+  event.preventDefault();  // Prevent default touch behavior like scrolling
+});
 
-// Handle button press
-function handleButtonRelease(button) {
-  keysPressed['W'] = false;
-  myGamePiece.speedY = Math.floor(myGamePiece.speedY*0.5);
-      keysPressed['S'] = false;
-    keysPressed['A'] = false;
-    myGamePiece.speedX = Math.floor(myGamePiece.speedX*0.5);
-    keysPressed['D'] = false;
-  // Add your desired behavior for each button press here
-}
+// Touch end event listener (button release)
+myGameArea.canvas.addEventListener('touchend', (event) => {
+  event.preventDefault();  // Prevent default touch behavior
+  if (pressedButton) {
+    handleButtonRelease(pressedButton);
+    pressedButton = null;  // Reset after release
+    isDragging = false;    // Stop tracking drag
+  }
+});
 
-// Mouse click event listener
-myGameArea.canvas.addEventListener('mouseup', (event) => {
-  const rect = myGameArea.canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
+// Touch move event listener (drag detection)
+myGameArea.canvas.addEventListener('touchmove', (event) => {
+  event.preventDefault();  // Prevent default touch behavior like scrolling
+  if (isDragging && pressedButton) {
+    const { x, y } = getTouchPosition(event);
 
-  // Check if the click intersects with any button
-  const buttonPositions = getButtonPositions();
-  buttonPositions.forEach(button => {
-      handleButtonRelease(button);
-  });
+    // If the touch moves outside the button's area, consider it a release
+    if (!isButtonPressed(x, y, pressedButton)) {
+      handleButtonRelease(pressedButton);
+      pressedButton = null;  // Reset pressed button
+      isDragging = false;    // Stop tracking drag
+    }
+  }
 });
 
 function r() { 
