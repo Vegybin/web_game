@@ -269,7 +269,7 @@ var myGameArea = {
         this.context.drawImage(bg_image, 0, 0);
     }
 }
-const buttonSize = 80;
+const buttonSize = 70;
 const buttonSpacing = 10;
 const transparency = 0.5;
 
@@ -280,10 +280,10 @@ let isDragging = false;    // Track if the touch is being dragged
 // Arrow keys positions relative to the bottom center of the canvas
 function getButtonPositions() {
   return [
-    { key: '↑', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize * 2 - buttonSpacing },  // Up
-    { key: '←', x: myGameArea.canvas.width / 2 - buttonSize - buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // Left
-    { key: '↓', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize },  // Down
-    { key: '→', x: myGameArea.canvas.width / 2 + buttonSize + buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // Right
+    { key: 'W', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize * 2 - buttonSpacing },  // Up
+    { key: 'A', x: myGameArea.canvas.width / 2 - buttonSize - buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // Left
+    { key: 'S', x: myGameArea.canvas.width / 2, y: myGameArea.canvas.height - buttonSize },  // Down
+    { key: 'D', x: myGameArea.canvas.width / 2 + buttonSize + buttonSpacing, y: myGameArea.canvas.height - buttonSize },  // Right
   ];
 }
 
@@ -322,19 +322,19 @@ function isButtonPressed(x, y, button) {
 
 // Handle button press
 function handleButtonPress(button) {
-  if (button.key=="↑"){
+  if (button.key=="W"){
   keysPressed['W'] = true;
   keysPressed['S'] = false;
   }
-  else if(button.key=="↓"){
+  else if(button.key=="S"){
     keysPressed['S'] = true;
     keysPressed['W'] = false;
   }
-  if (button.key=="←"){
+  if (button.key=="A"){
     keysPressed['A'] = true;
     keysPressed['D'] = false;
   }
-  else if(button.key=="→"){
+  else if(button.key=="D"){
     keysPressed['D'] = true;
     keysPressed['A'] = false;
   }
@@ -343,19 +343,19 @@ function handleButtonPress(button) {
 
 // Handle button release
 function handleButtonRelease(button) {
-  if (button.key=="↑"){
+  if (button.key=="W"){
   keysPressed['W'] = false;
   myGamePiece.speedY = Math.floor(myGamePiece.speedY*0.5);
   }
-  else if(button.key=="↓"){
+  else if(button.key=="S"){
     keysPressed['S'] = false;
     myGamePiece.speedY = Math.floor(myGamePiece.speedY*0.5);
   }
-  if (button.key=="←"){
+  if (button.key=="A"){
     keysPressed['A'] = false;
     myGamePiece.speedX = Math.floor(myGamePiece.speedX*0.5);
   }
-  else if(button.key=="→"){
+  else if(button.key=="D"){
     keysPressed['D'] = false;
     myGamePiece.speedX = Math.floor(myGamePiece.speedX*0.5);
   }
