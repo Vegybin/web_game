@@ -767,7 +767,6 @@ for (i=0; i< 40; i+=1){
 function updateGameArea() {
     
     myGameArea.clear();
-    drawButtons();
     myGameArea.frameNo += 1;
     if (myGameArea.frameNo == 1 || everyinterval(150)) {
         x = myGameArea.canvas.width;
@@ -790,6 +789,7 @@ function updateGameArea() {
     myThirdGamePiece.update(); // Add this line to draw the new piece
     myScore.text="TIME: " + myGameArea.frameNo/100;
     myScore.update();
+    drawButtons();
     if (keysPressed['W'] || keysPressed['w'] ) {
         myGamePiece.speedY -= 0.2;
     }
